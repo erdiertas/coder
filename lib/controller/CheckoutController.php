@@ -9,26 +9,30 @@ class CheckoutController extends Controller
         $this->createDir($this::getPath('temp') . '/projects');
 
         $allowList = $this->getAllowList();
-        if ($allowList) {
-            $allowCheckout = true;
-            foreach ($allowList as $file) {
-                $old_version = $this::getPath('/temp/projects' . $file);
-                $new_version = $this::getPath('../projects' . $file);
-                if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
-                    echo "$file değiştirilmiş.\n";
-                    $allowCheckout = false;
-                }
-            }
 
+        $allowCheckout = true;
+        foreach ($allowList as $file) {
+            $old_version = $this::getPath('/temp/projects' . $file);
+            $new_version = $this::getPath('../projects' . $file);
+            if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
+                echo "$file değiştirilmiş.\n";
+                $allowCheckout = false;
+            }
+        }
+
+        if ($allowCheckout) {
+            echo "Tüm proje yeniden alınıyor...\n";
+            if ($rm = $this::getPath('/temp/projects')) {
+                system('rm -rf -- ' . escapeshellarg($rm), $retval);
+            }
+            if ($rm = $this::getPath('../projects')) {
+                system('rm -rf -- ' . escapeshellarg($rm), $retval);
+            }
+            sleep(2);
+        }
+
+        if ($allowList) {
             if ($allowCheckout) {
-                echo "Tüm proje yeniden alınıyor...\n";
-                if ($rm = $this::getPath('/temp/projects')) {
-                    system('rm -rf -- ' . escapeshellarg($rm), $retval);
-                }
-                if ($rm = $this::getPath('../projects')) {
-                    system('rm -rf -- ' . escapeshellarg($rm), $retval);
-                }
-                sleep(2);
                 foreach ($allowList as $filePath) {
                     $path = explode("/", $filePath);
                     $endIndex = count($path) - 1;
