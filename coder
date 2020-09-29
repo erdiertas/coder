@@ -1,0 +1,28 @@
+<?php
+
+include_once "lib/helper/Controller.php";
+include_once "lib/helper/Command.php";
+include_once "lib/helper/ArrayHelper.php";
+include_once "lib/helper/Curl.php";
+
+
+$argv = $_SERVER['argv'];
+
+$firstCommand = ArrayHelper::getValue($argv, 1);
+if (!empty($firstCommand)) {
+    $firstCommand = explode("/", $firstCommand);
+    if (!isset($firstCommand[1])) {
+        $firstCommand[1] = 'index';
+    }
+    $controllerName = ucfirst($firstCommand[0]) . "Controller";
+    $controllerPath = "lib/controller/" . $controllerName . ".php";
+    if (file_exists($controllerPath)) {
+        include_once $controllerPath;
+        $controller = new $controllerName();
+        $controller->{"action" . ucfirst($firstCommand[1])}($argv);
+    } else {
+        echo "Bu komut hatalı!\n";
+    }
+} else {
+    echo "Komut satırı eksik!\n";
+}
