@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+setlocale(LC_ALL, 'en_GB.UTF-8');
 
 include_once __DIR__ . "/../lib/helper/Controller.php";
 include_once __DIR__ . "/../lib/helper/Command.php";
@@ -12,6 +13,7 @@ $argv = $_SERVER['argv'];
 $firstCommand = ArrayHelper::getValue($argv, 1);
 if (!empty($firstCommand)) {
     $firstCommand = explode("/", $firstCommand);
+
     if ($firstCommand[0] === "co") {
         $firstCommand[0] = 'checkout';
     }
