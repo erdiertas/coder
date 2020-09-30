@@ -6,30 +6,34 @@ class CheckoutController extends Controller
 
     public function actionIndex($params)
     {
-        $this->createDir($this::getPath('temp') . '/projects');
+        $this->createDir(self::PATH_TEMP_PROJECTS);
 
         $allowList = $this->getAllowList();
 
         $allowCheckout = true;
-        foreach ($allowList as $file) {
-            $old_version = $this::getPath('/temp/projects' . $file);
-            $new_version = $this::getPath('../projects' . $file);
-            if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
-                echo "$file değiştirilmiş.\n";
-                $allowCheckout = false;
+        if ($allowList) {
+            foreach ($allowList as $file) {
+                $old_version = self::PATH_TEMP_PROJECTS . $file;
+                $new_version = self::PATH_PROJECTS . $file;
+                if (file_exists($new_version)) {
+                    if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
+                        echo "$file değiştirilmiş.\n";
+                        $allowCheckout = false;
+                    }
+                }
+            }
+            if ($allowCheckout) {
+                echo "Tüm proje yeniden alınıyor...\n";
+                if ($rm = realpath(self::PATH_TEMP_PROJECTS)) {
+                    system('rm -rf -- ' . escapeshellarg($rm), $retval);
+                }
+                if ($rm = realpath(self::PATH_PROJECTS)) {
+                    system('rm -rf -- ' . escapeshellarg($rm), $retval);
+                }
+                sleep(2);
             }
         }
 
-        if ($allowCheckout) {
-            echo "Tüm proje yeniden alınıyor...\n";
-            if ($rm = $this::getPath('/temp/projects')) {
-                system('rm -rf -- ' . escapeshellarg($rm), $retval);
-            }
-            if ($rm = $this::getPath('../projects')) {
-                system('rm -rf -- ' . escapeshellarg($rm), $retval);
-            }
-            sleep(2);
-        }
 
         if ($allowList) {
             if ($allowCheckout) {
@@ -39,13 +43,13 @@ class CheckoutController extends Controller
                     $file = $path[$endIndex];
                     unset($path[$endIndex]);
                     $path = implode("/", $path);
-                    if ($this->createDir($this::getPath("/../") . "/projects" . $path)) {
+                    if ($this->createDir(self::PATH_PROJECTS  . $path)) {
                         $fileSource = Curl::post("get-file", ['path' => $filePath], 'raw');
 
-                        $this->putProjects($filePath, $fileSource);
+                        $this->putCoderProjects($filePath, $fileSource);
 
-                        if ($this->createDir($this::getPath('temp') . "/projects/" . $path)) {
-                            $this->putTemp('/projects' . $filePath, $fileSource);
+                        if ($this->createDir(self::PATH_TEMP_PROJECTS . $path)) {
+                            $this->putTemp( $filePath, $fileSource);
                         }
                     }
                 }

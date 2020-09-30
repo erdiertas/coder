@@ -1,9 +1,10 @@
+#!/usr/bin/env php
 <?php
 
-include_once "lib/helper/Controller.php";
-include_once "lib/helper/Command.php";
-include_once "lib/helper/ArrayHelper.php";
-include_once "lib/helper/Curl.php";
+include_once __DIR__ . "/../lib/helper/Controller.php";
+include_once __DIR__ . "/../lib/helper/Command.php";
+include_once __DIR__ . "/../lib/helper/ArrayHelper.php";
+include_once __DIR__ . "/../lib/helper/Curl.php";
 
 
 $argv = $_SERVER['argv'];
@@ -11,11 +12,14 @@ $argv = $_SERVER['argv'];
 $firstCommand = ArrayHelper::getValue($argv, 1);
 if (!empty($firstCommand)) {
     $firstCommand = explode("/", $firstCommand);
+    if ($firstCommand[0] == "co") {
+        $firstCommand[0] = 'Checkout';
+    }
     if (!isset($firstCommand[1])) {
         $firstCommand[1] = 'index';
     }
     $controllerName = ucfirst($firstCommand[0]) . "Controller";
-    $controllerPath = "lib/controller/" . $controllerName . ".php";
+    $controllerPath = __DIR__ . "/../lib/controller/" . $controllerName . ".php";
     if (file_exists($controllerPath)) {
         include_once $controllerPath;
         $controller = new $controllerName();

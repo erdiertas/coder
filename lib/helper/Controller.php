@@ -4,6 +4,8 @@
 class Controller
 {
     const JSON_FILE_ALLOW_LIST = '/allow-list.json';
+    const PATH_PROJECTS = __DIR__ . '/../../../CoderProjects';
+    const PATH_TEMP_PROJECTS = __DIR__ . '/../temp/CoderProjects';
 
     public function getAllowList()
     {
@@ -25,7 +27,7 @@ class Controller
 
     public function putTemp($path, $data)
     {
-        $return = file_put_contents($this::getPath('temp') . $path, $data);
+        $return = file_put_contents(self::PATH_TEMP_PROJECTS . $path, $data);
         if ($return) {
             echo "$path eklendi. \n";
         } else {
@@ -34,9 +36,9 @@ class Controller
         return $return;
     }
 
-    public function putProjects($path, $data)
+    public function putCoderProjects($path, $data)
     {
-        $return = file_put_contents($this::getPath('/../projects') . $path, $data);
+        $return = file_put_contents(self::PATH_PROJECTS . $path, $data);
         if ($return) {
             echo "$path eklendi. \n";
         } else {
