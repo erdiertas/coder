@@ -9,9 +9,11 @@ class PushController extends Controller
         $noChanges = true;
 
         foreach ($list as $file) {
-            $old_version = self::PATH_TEMP_PROJECTS . $file;
-            $new_version = self::PATH_PROJECTS . $file;
+            $old_version = realpath(self::PATH_TEMP_PROJECTS . $file);
+            $new_version = realpath(self::PATH_PROJECTS . $file);
+
             if (file_exists($new_version)) {
+
                 if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
                     $noChanges = false;
                     echo $new_version . " dosyası gönderiliyor... \n";
@@ -23,6 +25,10 @@ class PushController extends Controller
                     } else {
                         echo " gönderme başarısız!\n";
                     }
+                }
+            }else{
+                if (file_exists($old_version)) {
+                    unlink($old_version);
                 }
             }
         }
