@@ -16,6 +16,9 @@ class Curl
      */
     public static function post($action, $data = [], $dataType = 'json')
     {
+//        if ($data) {
+//            print_r($data);exit;
+//        }
         if (!isset($data['key'])) {
             $pemPath = Controller::getPath('temp') . '/comer.pem';
             if (file_exists($pemPath)) {

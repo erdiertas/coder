@@ -16,7 +16,7 @@ class CheckoutController extends Controller
                 $old_version = self::PATH_TEMP_PROJECTS . $file;
                 $new_version = self::PATH_PROJECTS . $file;
                 if (file_exists($new_version)) {
-                    if (@hash_file('md5', $old_version) != @hash_file('md5', $new_version)) {
+                    if (@md5_file('md5', $old_version) != @md5_file('md5', $new_version)) {
                         echo "$file değiştirilmiş.\n";
                         $allowCheckout = false;
                     }
@@ -26,15 +26,16 @@ class CheckoutController extends Controller
 
         if ($allowList ) {
             if ($allowCheckout) {
-                foreach (self::scanDir(realpath(self::PATH_PROJECTS)) as $filePath) {
-                    list(,$filePath) = explode("CoderProjects", $filePath, 2);
-                    if (array_search($filePath, $allowList) === false) {
-                        $rmFile = realpath(self::PATH_PROJECTS . $filePath);
-                        if (file_exists($rmFile)) {
-                            unlink($rmFile);
-                        }
-                    }
-                }
+                // TODO silme henüz silmiyor
+//                foreach (self::scanDir(realpath(self::PATH_PROJECTS)) as $filePath) {
+//                    list(,$filePath) = explode("CoderProjects", $filePath, 2);
+//                    if (array_search($filePath, $allowList) === false) {
+//                        $rmFile = realpath(self::PATH_PROJECTS . $filePath);
+//                        if (file_exists($rmFile)) {
+//                            unlink($rmFile);
+//                        }
+//                    }
+//                }
 
                 /**
                  * Boşları temizle
@@ -49,10 +50,19 @@ class CheckoutController extends Controller
                     if (!file_exists(self::PATH_PROJECTS  . $filePath)) {
                         $path = implode("/", $path);
                         if ($this->createDir(self::PATH_PROJECTS  . $path)) {
-                            $fileSource = Curl::post("get-file", ['path' => $filePath], 'raw');
-                            $this->putCoderProjects($filePath, $fileSource);
-                            if ($this->createDir(self::PATH_TEMP_PROJECTS . $path)) {
-                                $this->putTemp( $filePath, $fileSource);
+//                            echo "asdd\n";
+//                            print_r(realpath(self::PATH_PROJECTS . $filePath));
+//                            echo "asdd\n";
+
+                            $fileSource = Curl::post("get-file", [
+                                'path' => $filePath,
+                                'tempHash' => file_exists(self::PATH_PROJECTS . $filePath) ? md5_file(self::PATH_TEMP_PROJECTS . $filePath) : 0
+                            ], 'raw');
+                            if (!empty($fileSource)) {
+                                $this->putCoderProjects($filePath, $fileSource);
+                                if ($this->createDir(self::PATH_TEMP_PROJECTS . $path)) {
+                                    $this->putTemp( $filePath, $fileSource);
+                                }
                             }
                         }
                     }
