@@ -16,7 +16,7 @@ class CheckoutController extends Controller
                 $old_version = self::PATH_TEMP_PROJECTS . $file;
                 $new_version = self::PATH_PROJECTS . $file;
                 if (file_exists($new_version)) {
-                    if (@md5_file('md5', $old_version) != @md5_file('md5', $new_version)) {
+                    if (@md5_file( $old_version) != @md5_file( $new_version)) {
                         echo "$file değiştirilmiş.\n";
                         $allowCheckout = false;
                     }

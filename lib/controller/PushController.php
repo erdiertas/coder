@@ -14,7 +14,7 @@ class PushController extends Controller
 
             if (file_exists($new_version)) {
 
-                if (@md5_file('md5', $old_version) != @md5_file('md5', $new_version)) {
+                if (@md5_file( $old_version) != @md5_file($new_version)) {
                     $noChanges = false;
                     echo $new_version . " dosyası gönderiliyor... \n";
                     $content = file_get_contents($new_version);
