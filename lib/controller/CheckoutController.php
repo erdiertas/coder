@@ -26,16 +26,15 @@ class CheckoutController extends Controller
 
         if ($allowList ) {
             if ($allowCheckout) {
-                // TODO silme henüz silmiyor
-//                foreach (self::scanDir(realpath(self::PATH_PROJECTS)) as $filePath) {
-//                    list(,$filePath) = explode("CoderProjects", $filePath, 2);
-//                    if (array_search($filePath, $allowList) === false) {
-//                        $rmFile = realpath(self::PATH_PROJECTS . $filePath);
-//                        if (file_exists($rmFile)) {
-//                            unlink($rmFile);
-//                        }
-//                    }
-//                }
+                foreach (self::scanDir(realpath(self::PATH_PROJECTS)) as $filePath) {
+                    list(,$filePath) = explode("CoderProjects", $filePath, 2);
+                    if (array_search($filePath, $allowList) === false) {
+                        $rmFile = realpath(self::PATH_PROJECTS . $filePath);
+                        if (file_exists($rmFile)) {
+                            unlink($rmFile);
+                        }
+                    }
+                }
 
                 /**
                  * Boşları temizle
