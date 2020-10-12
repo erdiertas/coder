@@ -13,12 +13,18 @@ class CheckoutController extends Controller
         $allowCheckout = true;
         if ($allowList) {
             foreach ($allowList as $file) {
+                $allowPathVersion  = $file->version;
+                $file = $file->path;
                 $old_version = self::PATH_TEMP_PROJECTS . $file;
                 $new_version = self::PATH_PROJECTS . $file;
                 if (file_exists($new_version)) {
-                    if (@md5_file( $old_version) != @md5_file( $new_version)) {
+                    $new_version_md5 = @md5_file( $new_version);
+                    if (@md5_file( $old_version) != $new_version_md5) {
                         echo "$file değiştirilmiş.\n";
                         $allowCheckout = false;
+                    }
+                    if ($allowPathVersion != $new_version_md5) {
+                        unlink($new_version);
                     }
                 }
             }
@@ -42,6 +48,7 @@ class CheckoutController extends Controller
                 self::scanDir(realpath(self::PATH_PROJECTS));
 
                 foreach ($allowList as $filePath) {
+                    $filePath= $filePath->path;
                     $path = explode("/", $filePath);
                     $endIndex = count($path) - 1;
                     $file = $path[$endIndex];
