@@ -63,7 +63,7 @@ class CheckoutController extends Controller
                         $path = implode("/", $path);
                         if ($this->createDir(self::PATH_PROJECTS . $path)) {
                             $cmd = $params[0] . ' co/getFile ' . $filePath . ' ' . $path;
-                            system('cd ' . $_SERVER["PWD"] . ' && ' . $_SERVER["_"] . ' ' . $cmd . ' > /dev/null &'); // . ' > /dev/null &'
+                            system('cd ' . $_SERVER["PWD"] . ' && ' . $_SERVER["_"] . ' ' . $cmd ); // . ' > /dev/null &'
                         }
                     }
                 }
