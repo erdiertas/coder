@@ -42,8 +42,9 @@ class CheckoutController extends Controller
                     list(, $filePath) = explode("CoderProjects", $filePath, 2);
                     if (in_array($filePath, $allowListPaths) === false) {
                         $rmFile = realpath(self::PATH_PROJECTS . $filePath);
-                        if (file_exists($rmFile)) {
-                            unlink($rmFile);
+                        $rmTempFile = realpath(self::PATH_TEMP_PROJECTS . $filePath);
+                        if (file_exists($rmTempFile)) {
+                            @unlink($rmFile);
                         }
                     }
                 }
@@ -63,7 +64,7 @@ class CheckoutController extends Controller
                         $path = implode("/", $path);
                         if ($this->createDir(self::PATH_PROJECTS . $path)) {
                             $cmd = $params[0] . ' co/getFile ' . $filePath . ' ' . $path;
-                            system('cd ' . $_SERVER["PWD"] . ' && ' . $_SERVER["_"] . ' ' . $cmd ); // . ' > /dev/null &'
+                            system('cd ' . $_SERVER["PWD"] . ' && ' . $_SERVER["_"] . ' ' . $cmd); // . ' > /dev/null &'
                         }
                     }
                 }
@@ -81,7 +82,6 @@ class CheckoutController extends Controller
                 }
                 sleep(2);
             }
-
         }
     }
 

@@ -34,8 +34,11 @@ class Curl
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $server_output = curl_exec($ch);
-
+        $info = curl_getinfo($ch);
         curl_close($ch);
+        if ($info["http_code"] != 200) {
+            exit("Bağlantınızı kontrol edin.");
+        }
         if ($dataType === 'json') {
             return json_decode($server_output);
         }

@@ -12,6 +12,7 @@ class Controller
     public function getAllowList()
     {
         $allowList = Curl::post('allow-list');
+
         if ($allowList->success) {
             $this->putTemp(self::JSON_FILE_ALLOW_LIST, json_encode($allowList->list));
             return $allowList->list;
@@ -92,7 +93,7 @@ class Controller
                     $subFiledata = $this->scanDir($source_dir . $file . '/', $new_depth, $hidden, $firstPath . $file . '/');
                     $filedata = array_merge($filedata, $subFiledata);
                     if (!$subFiledata) {
-                        rmdir($source_dir . $file . '/');
+                        @rmdir($source_dir . $file . '/');
                     }
                 } else {
                     $filedata[] = $firstPath . $file;
