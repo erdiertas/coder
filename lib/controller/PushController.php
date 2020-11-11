@@ -12,7 +12,6 @@ class PushController extends Controller
             $file = $file->path;
             $old_version = realpath(self::PATH_TEMP_PROJECTS . $file);
             $new_version = realpath(self::PATH_PROJECTS . $file);
-
             if (file_exists($new_version)) {
 
                 if (@md5_file($old_version) != @md5_file($new_version)) {

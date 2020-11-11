@@ -33,10 +33,17 @@ class Curl
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
         $server_output = curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
         if ($info["http_code"] != 200) {
+            echo "Server response: \n";
+            print_r($server_output);
+            echo "\n";
+            echo "\n";
             exit("Bağlantınızı kontrol edin.");
         }
         if ($dataType === 'json') {

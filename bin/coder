@@ -5,6 +5,7 @@ setlocale(LC_ALL, 'en_GB.UTF-8');
 include_once __DIR__ . "/../lib/helper/Controller.php";
 include_once __DIR__ . "/../lib/helper/Command.php";
 include_once __DIR__ . "/../lib/helper/ArrayHelper.php";
+include_once __DIR__ . "/../lib/helper/FileHelper.php";
 include_once __DIR__ . "/../lib/helper/Curl.php";
 
 
