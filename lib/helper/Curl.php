@@ -7,7 +7,7 @@
  */
 class Curl
 {
-    const API = 'https://evimdehobi.usecomer.com/api/coder/';
+    const API = 'https://evimdehobi.test.usecomer.com/api/coder/';
 
     /**
      * @param $action
