@@ -28,15 +28,26 @@ class Controller
         return file_get_contents('../coder.pem');
     }
 
-    public function putTemp($path, $data)
+    public function putTemp($path, $data, $hideMessage = false)
     {
         $return = file_put_contents(self::PATH_TEMP_PROJECTS . $path, $data);
-        if ($return) {
-            echo "$path eklendi. \n";
-        } else {
-            echo "$path dosyası kaydedilemedi! \n";
+        if ($hideMessage === false) {
+            if ($return) {
+                echo "$path eklendi. \n";
+            } else {
+                echo "$path dosyası kaydedilemedi! \n";
+            }
         }
         return $return;
+    }
+
+    public function readTempJson($path, $default = null)
+    {
+        if (file_exists(self::PATH_TEMP_PROJECTS . $path)) {
+            $return = file_get_contents(self::PATH_TEMP_PROJECTS . $path);
+            return json_decode($return, true);
+        }
+        return $default;
     }
 
     public function putCoderProjects($path, $data)
