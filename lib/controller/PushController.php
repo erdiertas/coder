@@ -9,7 +9,7 @@ class PushController extends Controller
         $noChanges = true;
 
         foreach ($list as $file) {
-            echo time() . "\n";
+            //echo time() . "\n";
             $file = $file->path;
             $old_version = realpath(self::PATH_TEMP_PROJECTS . $file);
             $new_version = realpath(self::PATH_PROJECTS . $file);
