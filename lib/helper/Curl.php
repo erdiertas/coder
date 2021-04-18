@@ -7,7 +7,8 @@
  */
 class Curl
 {
-    const API = 'https://evimdehobi.usecomer.com/api/coder/';
+    const API = 'http://coder.comer.pw/coder/api/';
+    const STATUS_UNAUTHORIZED = 'unauthorized';
 
     /**
      * @param $action
@@ -39,6 +40,15 @@ class Curl
         $server_output = curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
+
+        if ($info["http_code"] == 403) {
+
+            $tempFolder = __DIR__ . '/../temp';
+            $tokenFile = $tempFolder . '/.token';
+            unlink($tokenFile);
+            echo "Oturmunuz sonlanmış, lütfen tekrar çalıştırıp giriş yapın.\n";
+            exit();
+        }
         if ($info["http_code"] != 200) {
             echo "Server response: \n";
             print_r($server_output);
@@ -47,7 +57,7 @@ class Curl
             exit("Bağlantınızı kontrol edin.");
         }
         if ($dataType === 'json') {
-            return json_decode($server_output);
+            return json_decode($server_output, true);
         }
 
         return $server_output;
