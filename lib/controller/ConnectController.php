@@ -36,7 +36,6 @@ class ConnectController extends Controller
                     continue;
                 }
 
-
                 if (($directory_depth < 1 or $new_depth > 0) && @is_dir($source_dir . $file)) {
                     if (in_array($source_dir . $file, $ignores)) {
                         continue;
@@ -205,8 +204,6 @@ class ConnectController extends Controller
     {
         $coderPath = $this->getCoderProjectsPath();
         echo "Dosya klonlanıyor: $path \n";
-//        $fileRaw = file_get_contents("http://local-evimdehobi.usecomer.com/coder/api/clone-file?path=" . urlencode($path));
-
         $fileRaw = Curl::post("clone-file", [
             'token' => $this->token,
             'path' => $path
@@ -217,7 +214,8 @@ class ConnectController extends Controller
         } else {
             $pathInfo = pathinfo($path);
             $dirname = $coderPath . '/' . $pathInfo['dirname'];
-            if (!file_exists($dirname) && !mkdir($concurrentDirectory = $dirname, 0777, true) && !is_dir($concurrentDirectory)) {
+            if (!file_exists($dirname) && !mkdir($concurrentDirectory = $dirname, 0777, true)
+                && !is_dir($concurrentDirectory)) {
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
             }
             $file = $coderPath . '/' . $path;

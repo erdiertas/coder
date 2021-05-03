@@ -8,7 +8,6 @@
 class Curl
 {
     const API = 'http://coder.comer.pw/coder/api/';
-    const STATUS_UNAUTHORIZED = 'unauthorized';
 
     /**
      * @param $action
