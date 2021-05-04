@@ -99,9 +99,10 @@ class ConnectController extends Controller
             $username = fgets($handle);
             fclose($handle);
             echo "Password: ";
-            $handle = fopen("php://stdin", "r");
-            $password = fgets($handle);
-            fclose($handle);
+            $handle2 = fopen("php://stdin", "r");
+            $password = fgets($handle2);
+            fclose($handle2);
+            $password = trim($password);
 //            system('stty -echo');
 //            $password = $this->prompt_silent();
 //            system('stty echo');
