@@ -99,8 +99,11 @@ class ConnectController extends Controller
             $username = fgets($handle);
             fclose($handle);
             echo "Password: ";
+            $handle = fopen("php://stdin", "r");
+            $password = fgets($handle);
+            fclose($handle);
 //            system('stty -echo');
-            $password = $this->prompt_silent();
+//            $password = $this->prompt_silent();
 //            system('stty echo');
             echo "\n\n";
             $login = Curl::post("login", [

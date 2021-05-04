@@ -13,9 +13,6 @@ $firstCommand = ArrayHelper::getValue($argv, 1);
 if (!empty($firstCommand)) {
     $firstCommand = explode("/", $firstCommand);
 
-    if ($firstCommand[0] === "co") {
-        $firstCommand[0] = 'checkout';
-    }
     if (!isset($firstCommand[1])) {
         $firstCommand[1] = 'index';
     }

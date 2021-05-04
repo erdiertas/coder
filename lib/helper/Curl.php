@@ -48,13 +48,14 @@ class Curl
             echo "Oturmunuz sonlanmış, lütfen tekrar çalıştırıp giriş yapın.\n";
             exit();
         }
-        if ($info["http_code"] != 200) {
+        if ($info["http_code"] !== 200) {
             echo "Server response: \n";
             print_r($server_output);
             echo "\n";
             echo "\n";
             exit("Bağlantınızı kontrol edin.");
         }
+
         if ($dataType === 'json') {
             return json_decode($server_output, true);
         }
