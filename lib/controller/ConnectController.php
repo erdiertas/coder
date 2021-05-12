@@ -134,6 +134,7 @@ class ConnectController extends Controller
             unlink($tokenFile);
             goto login;
         }
+
         $allowList = [];
         $ignoreList = [];
         foreach ($model['models'] as $model) {
@@ -154,6 +155,29 @@ class ConnectController extends Controller
             } else {
                 $filesChangedTimes[$item] = filemtime($item);
             }
+        }
+
+        echo "Yeni güncellemeler kontrol ediliyor...\n\n";
+
+        $hashList = [];
+        foreach ($filesChangedTimes as $filePath => $filemtime) {
+            $serverPath = substr($filePath, $coderPathLen);
+            $hashList[$serverPath] = md5_file($filePath);
+        }
+
+        $checkUpdated = Curl::post("check-updated", [
+            'token' => $token,
+            'files' => $hashList,
+        ]);
+        foreach ($checkUpdated as $serverPath) {
+            $item = $coderPath . '/' . $serverPath;
+            echo "Değiştirilmiş: $serverPath \n";
+            unlink($item);
+            $this->fileClone($serverPath);
+            $filesChangedTimes[$item] = filemtime($item);
+        }
+        if ($checkUpdated) {
+            echo "\n";
         }
 
         echo "Proje hazırlandı, şimdi rahatlıkla geliştirmelerinizi yapabilirsiniz.\nBug'sız kodlar dilerim... :) \n\n";
