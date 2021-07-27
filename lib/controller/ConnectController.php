@@ -3,23 +3,6 @@
 
 class ConnectController extends Controller
 {
-    public $token;
-
-    public function getMainPath()
-    {
-        $mainPath = realpath(__DIR__ . '/../../../');
-        return $mainPath;
-    }
-
-    public function getCoderProjectsPath()
-    {
-        $mainPath = $this->getMainPath();
-        $coderPath = $mainPath . '/CoderProjects';
-        if (!file_exists($coderPath) && !mkdir($coderPath) && !is_dir($coderPath)) {
-            echo "$coderPath klasörü oluşturulamıyor! Lütfen oluştur ve 0777 yazma izni tanımla.\n";
-        }
-        return $coderPath;
-    }
 
     public function scanDir($source_dir, $ignores = [], $directory_depth = 0, $hidden = FALSE, $firstPath = null)
     {
@@ -86,52 +69,18 @@ class ConnectController extends Controller
 
     public function actionIndex($params)
     {
-        echo "\nCODER 1.0 \n\n";
-        echo "Hoş Geldiniz! \n\n";
-
-        $tempFolder = __DIR__ . '/../temp';
-        $tokenFile = $tempFolder . '/.token';
+       echo $this->showWelcomeMessage();
 
         login:
-        if (!file_exists($tokenFile)) {
-            echo "Username: ";
-            $handle = fopen("php://stdin", "r");
-            $username = fgets($handle);
-            fclose($handle);
-            echo "Password: ";
-            $handle2 = fopen("php://stdin", "r");
-            $password = fgets($handle2);
-            fclose($handle2);
-            $password = trim($password);
-//            system('stty -echo');
-//            $password = $this->prompt_silent();
-//            system('stty echo');
-            echo "\n\n";
-            $login = Curl::post("login", [
-                'username' => $username,
-                'password' => $password
-            ]);
-
-            if ($login['status']) {
-                file_put_contents($tokenFile, $login['username'] . ':' . $login['auth_key']);
-            } else {
-                echo "\n\n";
-                echo "Giriş yapılamadı!\n\n";
-                exit();
-            }
-        }
-
-        $token = file_get_contents($tokenFile);
-        $this->token = $token;
+        $this->login();
 
         echo "Proje hazırlanıyor... Lütfen bekleyin... \n\n";
-        $coderPath = $this->getCoderProjectsPath();
+        $coderPath = $this::coderProjectsPath();
         $coderPathLen = strlen($coderPath) + 1;
 
-
-        $model = Curl::post("allow-list", ['token' => $token]);
+        $model = Curl::post("allow-list", ['token' => $this->token]);
         if (!$model['status']) {
-            unlink($tokenFile);
+            $this->tokenRemove();
             goto login;
         }
 
@@ -166,7 +115,7 @@ class ConnectController extends Controller
         }
 
         $checkUpdated = Curl::post("check-updated", [
-            'token' => $token,
+            'token' => $this->token,
             'files' => $hashList,
         ]);
         foreach ($checkUpdated as $serverPath) {
@@ -197,7 +146,7 @@ class ConnectController extends Controller
                 echo "Yeni dosya ekleniyor: $serverPath \n";
                 $content = file_get_contents($filePath);
                 $add = Curl::post("add-file", [
-                    'token' => $token,
+                    'token' => $this->token,
                     'path' => $serverPath,
                     'content' => $content,
                 ]);
@@ -217,7 +166,7 @@ class ConnectController extends Controller
                     echo "Dosya gönderiliyor: $serverPath \n";
                     $content = file_get_contents($filePath);
                     $push = Curl::post("push-file", [
-                        'token' => $token,
+                        'token' => $this->token,
                         'path' => $serverPath,
                         'content' => $content
                     ]);
@@ -238,7 +187,7 @@ class ConnectController extends Controller
             $serverPath = substr($filePath, $coderPathLen);
             echo "Kaldırılıyor: $serverPath \n";
             $remove = Curl::post("remove-file", [
-                'token' => $token,
+                'token' => $this->token,
                 'path' => $serverPath
             ]);
             if ($remove['status']) {
@@ -257,7 +206,7 @@ class ConnectController extends Controller
 
     public function fileClone($path)
     {
-        $coderPath = $this->getCoderProjectsPath();
+        $coderPath = $this::coderProjectsPath();
         echo "Dosya klonlanıyor: $path \n";
         $fileRaw = Curl::post("clone-file", [
             'token' => $this->token,

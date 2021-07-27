@@ -21,6 +21,9 @@ if (!empty($firstCommand)) {
     if (file_exists($controllerPath)) {
         include_once $controllerPath;
         $controller = new $controllerName();
+        unset($argv[0]);
+        unset($argv[1]);
+        $argv = array_values($argv);
         $controller->{"action" . ucfirst($firstCommand[1])}($argv);
     } else {
         echo "Bu komut hatalı!\n";

@@ -43,15 +43,17 @@ class Curl
 
         if ($info["http_code"] == 403) {
 
-            $tempFolder = __DIR__ . '/../temp';
-            $tokenFile = $tempFolder . '/.token';
-            unlink($tokenFile);
+            $tokenFile = Controller::getTempPath() . '/.token';
+            @unlink($tokenFile);
+            Controller::recursiveRemove(Controller::coderProjectsPath());
+            Controller::coderProjectsPath();
             echo "Oturmunuz sonlanmış, lütfen tekrar çalıştırıp giriş yapın.\n";
             exit();
         }
         if ($info["http_code"] !== 200) {
+            echo "ERROR CODE: " . $info["http_code"] . "\n";
             echo "Server response: \n";
-            print_r($server_output);
+            var_dump($server_output);
             echo "\n";
             echo "\n";
             exit("Bağlantınızı kontrol edin.");

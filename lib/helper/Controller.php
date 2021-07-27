@@ -5,6 +5,7 @@ use yii\helpers\ArrayHelper;
 
 class Controller
 {
+    public $token;
 
     public static function getPath($path)
     {
@@ -14,6 +15,47 @@ class Controller
         return false;
     }
 
+    public static function getMainPath()
+    {
+        $mainPath = realpath(__DIR__ . '/../../../');
+        return $mainPath;
+    }
+
+    public static function getCoderPath()
+    {
+        $mainPath = realpath(__DIR__ . '/../../');
+        return $mainPath;
+    }
+
+    public static function getTempPath()
+    {
+        return static::getCoderPath() . '/temp';
+    }
+
+    public static function coderProjectsPath()
+    {
+        $mainPath = static::getMainPath();
+        $coderPath = $mainPath . '/CoderProjects';
+        if (!file_exists($coderPath) && !mkdir($coderPath) && !is_dir($coderPath)) {
+            echo "$coderPath klasörü oluşturulamıyor! Lütfen oluştur ve 0777 yazma izni tanımla.\n";
+        }
+        return $coderPath;
+    }
+
+
+    public static function recursiveRemove($path)
+    {
+        if (is_dir($path)) {
+            foreach (scandir($path) as $entry) {
+                if (!in_array($entry, ['.', '..'], true)) {
+                    self::recursiveRemove($path . DIRECTORY_SEPARATOR . $entry);
+                }
+            }
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
 
     public function scanDir($source_dir, $directory_depth = 0, $hidden = FALSE, $firstPath = null)
     {
@@ -47,4 +89,59 @@ class Controller
         return [];
     }
 
+    public function showWelcomeMessage()
+    {
+        return "\nCODER v1.0.1 \n\n"
+            . "Hoş Geldiniz! \n\n";
+    }
+
+    public function login()
+    {
+        $tokenFile = self::getTempPath() . '/.token';
+        if (!file_exists($tokenFile)) {
+            Controller::recursiveRemove(Controller::coderProjectsPath());
+            Controller::coderProjectsPath();
+            echo "Username: ";
+            $handle = fopen("php://stdin", "r");
+            $username = fgets($handle);
+            fclose($handle);
+            echo "Password: ";
+            $handle2 = fopen("php://stdin", "r");
+            $password = fgets($handle2);
+            fclose($handle2);
+            $password = trim($password);
+//            system('stty -echo');
+//            $password = $this->prompt_silent();
+//            system('stty echo');
+            echo "\n\n";
+
+            $login = Curl::post("login", [
+                'username' => $username,
+                'password' => $password
+            ]);
+
+            if ($login['status']) {
+                file_put_contents($tokenFile, $login['username'] . ':' . $login['auth_key']);
+            } else {
+                Controller::recursiveRemove(Controller::coderProjectsPath());
+                Controller::coderProjectsPath();
+                echo "\n\n";
+                echo "Giriş yapılamadı!\n\n";
+                exit();
+            }
+        }
+
+        $token = file_get_contents($tokenFile);
+        $this->token = $token;
+
+        return [
+            'tokenFile' => $tokenFile,
+        ];
+    }
+
+    public function tokenRemove()
+    {
+        $tokenFile = self::getTempPath() . '/.token';
+        unlink($tokenFile);
+    }
 }
