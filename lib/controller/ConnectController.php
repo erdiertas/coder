@@ -207,11 +207,14 @@ class ConnectController extends Controller
     public function fileClone($path)
     {
         $coderPath = $this::coderProjectsPath();
-        echo "Dosya klonlanıyor: $path \n";
         $fileRaw = Curl::post("clone-file", [
             'token' => $this->token,
             'path' => $path
         ], 'raw');
+        if (strlen($fileRaw) === 0) {
+            return;
+        }
+        echo "Dosya klonlanıyor: $path \n";
 
         if ($fileRaw === "!!__CODER_NO_AUTHORIZATION__!!") {
             echo "! Bu dosyayı okuma yetkiniz bulunmuyor: $path \n";
